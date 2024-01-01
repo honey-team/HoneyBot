@@ -2,3 +2,4 @@ __pycache__/
 venv/
 token.env
 config.json
+servers.db

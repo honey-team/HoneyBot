@@ -2,9 +2,13 @@ import os
 from dotenv import load_dotenv
 import disnake
 from disnake.ext import commands
+import manage_servers_db as manage_db
 
 
-bot = commands.Bot(test_guilds=[1113102018991620228, 972183553775382530])
+# bot = commands.Bot(test_guilds=[
+#                    1113102018991620228, 972183553775382530], command_prefix=manage_db.get_command_prefix)
+bot = commands.InteractionBot(
+    test_guilds=[1113102018991620228, 972183553775382530])
 
 
 @bot.event
@@ -12,23 +16,17 @@ async def on_ready():
     print('The bot is ready!')
 
 
-# @bot.slash_command(guild_ids=[1113102018991620228])
-# async def ping(inter: disnake.ApplicationCommandInteraction):
-#     await inter.response.send_message("Pong!")
-
-bot.load_extension("cogs.public_commands")
-    
-    
-# @bot.slash_command()
-# async def server_info(inter: disnake.ApplicationCommandInteraction):
-#     """Returns the info about the server"""
-#     await inter.response.send_message(f"Server name: {inter.guild.name}\nTotal members: {inter.guild.member_count}")
+@bot.event
+async def on_guild_join(guild: disnake.Guild):
+    await manage_db.add_server(guild.id)
 
 
-# @bot.slash_command()
-# async def user_info(inter: disnake.ApplicationCommandInteraction):
-#     """Returns the info about the user"""
-#     await inter.response.send_message(f"User name: {inter.author}\nUser ID: {inter.author.id}")
+@bot.event
+async def on_guild_leave(guild: disnake.Guild):
+    await manage_db.remove_server(guild.id)
+
+
+bot.load_extension("cogs.public_slash_commands")
 
 
 load_dotenv('token.env')
