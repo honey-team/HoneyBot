@@ -6,11 +6,9 @@ import utils
 
 
 class PublicSlashCommands(commands.Cog):
-    """This will be for a ping command."""
-
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-
+        
     @commands.slash_command()
     async def ping(self, inter: disnake.ApplicationCommandInteraction):
         """Get the bot's current websocket latency."""
@@ -52,7 +50,7 @@ class PublicSlashCommands(commands.Cog):
         moderator_roles_str = ''
 
         for role_id in manage_db.get_moderator_roles(guild.id):
-            moderator_roles_str += guild.get_role(int(role_id)).mention + '\n'
+            moderator_roles_str += guild.get_role(role_id).mention + '\n'
 
         embed_server_info = disnake.Embed(
             color=0xfa7c10,
@@ -100,7 +98,7 @@ class PublicSlashCommands(commands.Cog):
         await inter.response.send_message(embed=embed_users_avatar)
 
     @commands.slash_command()
-    # @utils.required_administrator
+    @commands.has_guild_permissions(administrator=True)
     async def add_moderator_role(self, inter: disnake.ApplicationCommandInteraction, role: disnake.Role):
         """Adds the role to moderator's roles"""
         result_embed = disnake.Embed(
@@ -120,7 +118,7 @@ class PublicSlashCommands(commands.Cog):
         await inter.response.send_message(embed=result_embed)
 
     @commands.slash_command()
-    # @utils.required_administrator
+    @commands.has_guild_permissions(administrator=True)
     async def remove_moderator_role(self, inter: disnake.ApplicationCommandInteraction, role: disnake.Role):
         """Removes the role from moderator's roles"""
         result_embed = disnake.Embed(
@@ -138,7 +136,30 @@ class PublicSlashCommands(commands.Cog):
             result_embed.description = f"{role.mention} isn't in moderator's roles."
 
         await inter.response.send_message(embed=result_embed)
+        
+    @commands.slash_command()
+    @utils.required_moderator
+    async def clear(self, inter: disnake.ApplicationCommandInteraction, amount: int, author: disnake.Member = None):
+        """Removes the messages."""
+        def check(m: disnake.Message):
+            if author:
+                return m.author == author
+            return True
+        deleted = await inter.channel.purge(limit=amount, check=check)
+        
+        messages_deleted_embed = disnake.Embed(
+            description=f"Deleted {len(deleted)} messages.",
+            color=0xfa7c10,
+            timestamp=datetime.now()
+        )
 
+        messages_deleted_embed.set_footer(
+            text=inter.author.name,
+            icon_url=inter.author.avatar.url
+        )
+        
+        await inter.response.send_message(embed=messages_deleted_embed, delete_after=60)
+        
 
 def setup(bot: commands.Bot):
     bot.add_cog(PublicSlashCommands(bot))

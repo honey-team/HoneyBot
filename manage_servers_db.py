@@ -97,11 +97,11 @@ def get_moderator_roles(guild_id: int) -> list:
         cursor.execute(
             "SELECT moderator_roles FROM Servers WHERE guild_id = ?", (guild_id,))
         moderator_roles_str = cursor.fetchall()[0][0]
-        if moderator_roles_str:
-            return moderator_roles_str.split('/')
-        else:
-            return []
-
+        moderator_roles_list = []
+        for str_role_id in moderator_roles_str.split("/"):
+            moderator_roles_list.append(int(str_role_id))
+            
+        return moderator_roles_list
 
 async def check_moderator_role(guild_id: int, role_id: int) -> bool:
     """Checks are role is moderator role."""
