@@ -48,11 +48,21 @@ class PublicSlashCommands(commands.Cog):
         """Returns info about server."""
         guild = inter.guild
         moderator_roles_str = ''
+        users = []
+        bots = []
+        
+ 
+        for member in await guild.chunk():
+            if member.bot:
+                bots.append(member)
+            else:
+                users.append(member)
 
         for role_id in manage_db.get_moderator_roles(guild.id):
             moderator_roles_str += guild.get_role(role_id).mention + '\n'
 
         embed_server_info = disnake.Embed(
+            title=f"Information about server {guild.name}",
             color=0xfa7c10,
             timestamp=datetime.now()
         )
@@ -64,17 +74,14 @@ class PublicSlashCommands(commands.Cog):
 
         embed_server_info.set_thumbnail(url=guild.icon.url)
 
-        embed_server_info.add_field(name='Name', value=guild.name, inline=True)
+        embed_server_info.add_field(name='Members:', value=f"All: **{guild.member_count}**\nUsers: **{len(users)}**\nBots: **{len(bots)}**", inline=True)
+        embed_server_info.add_field(name='Channels:', value=f"All: **{len(guild.channels)}**\nText: **{len(guild.text_channels)}**\nForum: **{len(guild.forum_channels)}**\nVoice: **{len(guild.voice_channels)}**", inline=True)
         embed_server_info.add_field(
-            name='Description', value=guild.description, inline=True)
+            name="Moderator's roles", value=moderator_roles_str, inline=True)
+        # embed_server_info.add_field(name='Owner:', value=guild.owner.name, inline=True)
         embed_server_info.add_field(
             name='Created at', value=guild.created_at.date(), inline=True)
         embed_server_info.add_field(name='ID', value=guild.id, inline=True)
-        embed_server_info.add_field(
-            name='Members count', value=guild.member_count, inline=True)
-        embed_server_info.add_field(
-            name="Moderator's roles", value=moderator_roles_str, inline=True)
-        
         await inter.response.send_message(embed=embed_server_info)
 
     @commands.slash_command()
@@ -158,7 +165,7 @@ class PublicSlashCommands(commands.Cog):
             icon_url=inter.author.avatar.url
         )
         
-        await inter.response.send_message(embed=messages_deleted_embed, delete_after=60)
+        await inter.response.send_message(embed=messages_deleted_embed, delete_after=10)
         
 
 def setup(bot: commands.Bot):
