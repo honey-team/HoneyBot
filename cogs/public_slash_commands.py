@@ -2,7 +2,8 @@ import disnake
 from disnake.ext import commands
 from datetime import datetime
 import manage_servers_db as manage_db
-import utils
+from utils import decorators
+from utils import modals
 
 
 class PublicSlashCommands(commands.Cog):
@@ -145,7 +146,7 @@ class PublicSlashCommands(commands.Cog):
         await inter.response.send_message(embed=result_embed)
         
     @commands.slash_command()
-    @utils.required_moderator
+    @decorators.required_moderator
     async def clear(self, inter: disnake.ApplicationCommandInteraction, amount: int, author: disnake.Member = None):
         """Removes the messages."""
         def check(m: disnake.Message):
@@ -166,6 +167,11 @@ class PublicSlashCommands(commands.Cog):
         )
         
         await inter.response.send_message(embed=messages_deleted_embed, delete_after=10)
+    
+    @commands.slash_command()
+    async def send_embed(self, inter: disnake.ApplicationCommandInteraction):
+        """Sends the embed message."""
+        await inter.response.send_modal(modal=modals.CreateEmbedModal())
         
 
 def setup(bot: commands.Bot):
