@@ -1,7 +1,7 @@
 from datetime import datetime
 import disnake
 import functools
-import manage_servers_db as manage_db
+from . import manage_servers_db as manage_db
 from disnake.ext import commands
 
 
@@ -10,12 +10,13 @@ def required_moderator(func):
     @functools.wraps(func)
     async def wrapper(*args, **kwargs):
         inter: disnake.ApplicationCommandInteraction = kwargs.get('inter')
-        
-        moderator_roles = manage_db.get_moderator_roles(guild_id=inter.guild_id)
+
+        moderator_roles = manage_db.get_moderator_roles(
+            guild_id=inter.guild_id)
         for role in inter.author.roles:
             if role.id in moderator_roles:
                 return await func(*args, **kwargs)
-        
+
         # raise commands.errors.MissingAnyRole()
         error_embed = disnake.Embed(
             title="You don't have moderator permissions!",
@@ -29,5 +30,5 @@ def required_moderator(func):
         )
 
         await inter.response.send_message(embed=error_embed)
-    
+
     return wrapper

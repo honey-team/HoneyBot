@@ -11,10 +11,14 @@ intents = disnake.Intents.default()
 intents.members = True
 
 bot = commands.InteractionBot(
-    test_guilds=[1113102018991620228, 972183553775382530], intents=intents)
+    test_guilds=[1113102018991620228, 972183553775382530],
+    intents=intents
+)
 
+bot.i18n.load("localization/")
 
 bot.load_extension("cogs.events")
+bot.load_extension("cogs.moderation")
 bot.load_extension("cogs.public_slash_commands")
 
 

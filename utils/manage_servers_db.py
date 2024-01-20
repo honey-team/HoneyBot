@@ -17,7 +17,7 @@ def create_servers_db():
 
 def get_command_prefix(bot: commands.Bot, message: disnake.Message):
     """Gets command prefix from db."""
-    # This function is useless, because I don't wanna add prefix commands.
+    # * This function is useless, because I don't wanna add prefix commands.
     return '!'
 
 
@@ -100,8 +100,9 @@ def get_moderator_roles(guild_id: int) -> list:
         moderator_roles_list = []
         for str_role_id in moderator_roles_str.split("/"):
             moderator_roles_list.append(int(str_role_id))
-            
+
         return moderator_roles_list
+
 
 async def check_moderator_role(guild_id: int, role_id: int) -> bool:
     """Checks are role is moderator role."""

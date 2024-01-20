@@ -1,7 +1,7 @@
 import disnake
 from disnake.ext import commands
 from datetime import datetime
-import manage_servers_db as manage_db
+from utils import manage_servers_db as manage_db
 
 
 class Events(commands.Cog):
