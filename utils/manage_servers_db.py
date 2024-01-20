@@ -17,7 +17,7 @@ def create_servers_db():
 
 def get_command_prefix(bot: commands.Bot, message: disnake.Message):
     """Gets command prefix from db."""
-    # * This function is useless, because I don't wanna add prefix commands.
+    # ! This function is useless, because I don't wanna add prefix commands.
     return '!'
 
 
