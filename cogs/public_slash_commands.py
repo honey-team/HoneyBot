@@ -27,7 +27,7 @@ class PublicSlashCommands(commands.Cog):
         )
     ):
         member = inter.author if not member else member
-        # nick = member.global_name if not member.nick else member.nick
+        nick = member.global_name if not member.nick else member.nick
 
         embed_user_info = disnake.Embed(
             color=member.color,
@@ -42,7 +42,7 @@ class PublicSlashCommands(commands.Cog):
         embed_user_info.set_thumbnail(url=member.avatar.url)
 
         embed_user_info.add_field(name="Name", value=member.name, inline=True)
-        # embed_user_info.add_field(name="Nick", value=nick, inline=True)
+        embed_user_info.add_field(name="Nick", value=nick, inline=True)
         embed_user_info.add_field(
             name="Joined at", value=member.joined_at.date(), inline=True)
         embed_user_info.add_field(

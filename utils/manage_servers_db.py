@@ -2,9 +2,10 @@ import disnake
 from disnake.ext import commands
 import sqlite3
 
+path = "servers.db"
 
 def create_servers_db():
-    with sqlite3.connect("servers.db") as connection:
+    with sqlite3.connect(path) as connection:
         cursor = connection.cursor()
 
         cursor.execute('''
@@ -23,7 +24,7 @@ def get_command_prefix(bot: commands.Bot, message: disnake.Message):
 
 async def add_server(guild_id: int):
     """Adds server to db."""
-    with sqlite3.connect("servers.db") as connection:
+    with sqlite3.connect(path) as connection:
         cursor = connection.cursor()
 
         cursor.execute(
@@ -32,7 +33,7 @@ async def add_server(guild_id: int):
 
 async def remove_server(guild_id: int):
     """Removes server from db."""
-    with sqlite3.connect("servers.db") as connection:
+    with sqlite3.connect(path) as connection:
         cursor = connection.cursor()
 
         cursor.execute("DELETE FROM Servers WHERE guild_id = ?", (guild_id,))
@@ -41,7 +42,7 @@ async def remove_server(guild_id: int):
 def add_moderator_role(guild_id: int, role_id: int) -> bool:
     """Adds moderator role to the server from db."""
     role_id = str(role_id)
-    with sqlite3.connect("servers.db") as connection:
+    with sqlite3.connect(path) as connection:
         cursor = connection.cursor()
 
         cursor.execute(
@@ -67,7 +68,7 @@ def add_moderator_role(guild_id: int, role_id: int) -> bool:
 def remove_moderator_role(guild_id: int, role_id: int) -> bool:
     """Removes moderator role from the server from db."""
     role_id = str(role_id)
-    with sqlite3.connect("servers.db") as connection:
+    with sqlite3.connect(path) as connection:
         cursor = connection.cursor()
 
         cursor.execute(
@@ -91,7 +92,7 @@ def remove_moderator_role(guild_id: int, role_id: int) -> bool:
 
 def get_moderator_roles(guild_id: int) -> list:
     """Gets moderator's roles."""
-    with sqlite3.connect("servers.db") as connection:
+    with sqlite3.connect(path) as connection:
         cursor = connection.cursor()
 
         cursor.execute(

@@ -1,8 +1,10 @@
 import disnake
 from disnake.ext import commands
 from datetime import datetime
+from datetime import timedelta
 from utils import manage_servers_db as manage_db
 from utils import decorators
+from utils import utils
 
 
 class Moderation(commands.Cog):
@@ -116,6 +118,179 @@ class Moderation(commands.Cog):
         )
 
         await inter.response.send_message(embed=messages_deleted_embed, delete_after=10)
+    
+    @commands.slash_command(
+        name=disnake.Localized("mute", key="MUTE_COMMAND_NAME"),
+        description=disnake.Localized("Mutes the member.", key="MUTE_COMMAND_DESCRIPTION")
+    )
+    @decorators.required_moderator
+    async def mute(
+        self,
+        inter: disnake.ApplicationCommandInteraction,
+        member: disnake.Member = commands.Param(
+            name=disnake.Localized("member", key="MUTE_COMMAND_PARAM_MEMBER_NAME"),
+            description=disnake.Localized("The member, that you want to mute.", key="MUTE_COMMAND_PARAM_MEMBER_DESCRIPTION")
+        ),
+        duration: str = commands.Param(
+            name=disnake.Localized("duration", key="MUTE_COMMAND_PARAM_DURATION_NAME"),
+            description=disnake.Localized("The duration, for that you want to mute the member, takes time as: '3d', '1h', '17m', '32s'.", key="MUTE_COMMAND_PARAM_DURATION_DESCRIPTION")
+        ),
+        reason: str = commands.Param(
+            default=None,
+            name=disnake.Localized("reason", key="MUTE_COMMAND_PARAM_REASON_NAME"),
+            description=disnake.Localized("The reason, for that you want to mute the member.", key="MUTE_COMMAND_PARAM_REASON_DESCRIPTION")
+        )
+    ):
+        mute_embed = disnake.Embed(
+            description=f'{member.mention} was succesfully muted for {duration} for reason: "{reason}"',
+            color=0xfa7c10,
+            timestamp=datetime.now()
+        )
+        
+        mute_embed.set_thumbnail(url=member.avatar.url)
+
+        mute_embed.set_footer(
+            text=inter.author.name,
+            icon_url=inter.author.avatar.url
+        )
+        
+        await member.timeout(duration=utils.from_str_to_timedelta(duration), reason=reason)
+        await inter.response.send_message(embed=mute_embed)
+    
+    @commands.slash_command(
+        name=disnake.Localized("unmute", key="UNMUTE_COMMAND_NAME"),
+        description=disnake.Localized("Unmutes the member.", key="UNMUTE_COMMAND_DESCRIPTION")
+    )
+    @decorators.required_moderator
+    async def unmute(
+        self,
+        inter: disnake.ApplicationCommandInteraction,
+        member: disnake.Member = commands.Param(
+            name=disnake.Localized("member", key="UNMUTE_COMMAND_PARAM_MEMBER_NAME"),
+            description=disnake.Localized("The member, that you want to unmute.", key="UNMUTE_COMMAND_PARAM_MEMBER_DESCRIPTION")
+        ),
+        reason: str = commands.Param(
+            default=None,
+            name=disnake.Localized("reason", key="UNMUTE_COMMAND_PARAM_REASON_NAME"),
+            description=disnake.Localized("The reason, for that you want to unmute the member.", key="UNMUTE_COMMAND_PARAM_REASON_DESCRIPTION")
+        )
+    ):
+        unmute_embed = disnake.Embed(
+            description=f'{member.mention} was succesfully unmuted for reason: "{reason}"',
+            color=0xfa7c10,
+            timestamp=datetime.now()
+        )
+        
+        unmute_embed.set_thumbnail(url=member.avatar.url)
+
+        unmute_embed.set_footer(
+            text=inter.author.name,
+            icon_url=inter.author.avatar.url
+        )
+        
+        await member.timeout(duration=None, reason=reason)
+        await inter.response.send_message(embed=unmute_embed)
+    
+    @commands.slash_command(
+        name=disnake.Localized("kick", key="KICK_COMMAND_NAME"),
+        description=disnake.Localized("Kicks the member.", key="KICK_COMMAND_DESCRIPTION")
+    )
+    @decorators.required_moderator
+    async def kick(
+        self,
+        inter: disnake.ApplicationCommandInteraction,
+        member: disnake.Member = commands.Param(
+            name=disnake.Localized("member", key="KICK_COMMAND_PARAM_MEMBER_NAME"),
+            description=disnake.Localized("The member, that you want to kick.", key="KICK_COMMAND_PARAM_MEMBER_DESCRIPTION")
+        ),
+        reason: str = commands.Param(
+            default=None,
+            name=disnake.Localized("reason", key="KICK_COMMAND_PARAM_REASON_NAME"),
+            description=disnake.Localized("The reason, for that you want to kick the member.", key="KICK_COMMAND_PARAM_REASON_DESCRIPTION")
+        )
+    ):
+        kick_embed = disnake.Embed(
+            description=f'{member.mention} was succesfully kicked for reason: "{reason}"',
+            color=0xfa7c10,
+            timestamp=datetime.now()
+        )
+        
+        kick_embed.set_thumbnail(url=member.avatar.url)
+
+        kick_embed.set_footer(
+            text=inter.author.name,
+            icon_url=inter.author.avatar.url
+        )
+        await member.kick(reason=reason)
+        await inter.response.send_message(embed=kick_embed)
+    
+    @commands.slash_command(
+        name=disnake.Localized("ban", key="BAN_COMMAND_NAME"),
+        description=disnake.Localized("Bans the member.", key="BAN_COMMAND_DESCRIPTION")
+    )
+    @decorators.required_moderator
+    async def ban(
+        self,
+        inter: disnake.ApplicationCommandInteraction,
+        member: disnake.Member = commands.Param(
+            name=disnake.Localized("member", key="BAN_COMMAND_PARAM_MEMBER_NAME"),
+            description=disnake.Localized("The member, that you want to ban.", key="BAN_COMMAND_PARAM_MEMBER_DESCRIPTION")
+        ),
+        reason: str = commands.Param(
+            default=None,
+            name=disnake.Localized("reason", key="BAN_COMMAND_PARAM_REASON_NAME"),
+            description=disnake.Localized("The reason, for that you want to ban the member.", key="BAN_COMMAND_PARAM_REASON_DESCRIPTION")
+        )
+    ):
+        ban_embed = disnake.Embed(
+            description=f'{member.mention} was succesfully banned for reason: "{reason}"',
+            color=0xfa7c10,
+            timestamp=datetime.now()
+        )
+        
+        ban_embed.set_thumbnail(url=member.avatar.url)
+
+        ban_embed.set_footer(
+            text=inter.author.name,
+            icon_url=inter.author.avatar.url
+        )
+        
+        await member.ban(reason=reason)
+        await inter.response.send_message(embed=ban_embed)
+    
+    @commands.slash_command(
+        name=disnake.Localized("unban", key="UNBAN_COMMAND_NAME"),
+        description=disnake.Localized("Unbans the member.", key="UNBAN_COMMAND_DESCRIPTION")
+    )
+    @decorators.required_moderator
+    async def unban(
+        self,
+        inter: disnake.ApplicationCommandInteraction,
+        member: disnake.Member = commands.Param(
+            name=disnake.Localized("member", key="UNBAN_COMMAND_PARAM_MEMBER_NAME"),
+            description=disnake.Localized("The member, that you want to unban.", key="UNBAN_COMMAND_PARAM_MEMBER_DESCRIPTION")
+        ),
+        reason: str = commands.Param(
+            default=None,
+            name=disnake.Localized("reason", key="UN_COMMAND_PARAM_REASON_NAME"),
+            description=disnake.Localized("The reason, for that you want to unban the member.", key="UNBAN_COMMAND_PARAM_REASON_DESCRIPTION")
+        )
+    ):
+        unban_embed = disnake.Embed(
+            description=f'{member.mention} was succesfully unbanned for reason: "{reason}"',
+            color=0xfa7c10,
+            timestamp=datetime.now()
+        )
+        
+        unban_embed.set_thumbnail(url=member.avatar.url)
+
+        unban_embed.set_footer(
+            text=inter.author.name,
+            icon_url=inter.author.avatar.url
+        )
+        
+        await member.unban(reason=reason)
+        await inter.response.send_message(embed=unban_embed)
 
 
 def setup(bot: commands.Bot):

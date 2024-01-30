@@ -22,6 +22,7 @@ class Events(commands.Cog):
 
     @commands.Cog.listener()
     async def on_slash_command_error(self, inter: disnake.ApplicationCommandInteraction, error):
+        print(error)
         error_embed = disnake.Embed(
             color=0xfa7c10,
             timestamp=datetime.now()
@@ -33,9 +34,9 @@ class Events(commands.Cog):
         )
         
         if isinstance(error, commands.errors.MissingPermissions):
-            if 'administrator' in error.missing_permissions:
-                error_embed.title = "You don't have administrator permissions!"
-                await inter.response.send_message(embed=error_embed)
+            print(error.missing_permissions)
+            error_embed.title = f"You don't have {', '.join(error.missing_permissions)} permissions!"
+            await inter.response.send_message(embed=error_embed)
 
 
 def setup(bot: commands.Bot):

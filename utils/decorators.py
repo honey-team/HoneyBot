@@ -11,13 +11,6 @@ def required_moderator(func):
     async def wrapper(*args, **kwargs):
         inter: disnake.ApplicationCommandInteraction = kwargs.get('inter')
 
-        moderator_roles = manage_db.get_moderator_roles(
-            guild_id=inter.guild_id)
-        for role in inter.author.roles:
-            if role.id in moderator_roles:
-                return await func(*args, **kwargs)
-
-        # raise commands.errors.MissingAnyRole()
         error_embed = disnake.Embed(
             title="You don't have moderator permissions!",
             color=0xfa7c10,
@@ -28,6 +21,21 @@ def required_moderator(func):
             text=inter.author.name,
             icon_url=inter.author.avatar.url
         )
+
+        if inter.author.guild_permissions.administrator:
+            return await func(*args, **kwargs)
+        else:
+            try:
+                moderator_roles = manage_db.get_moderator_roles(guild_id=inter.guild_id)
+            except AttributeError:
+                await inter.response.send_message(embed=error_embed)
+                return
+                
+            for role in inter.author.roles:
+                if role.id in moderator_roles:
+                    return await func(*args, **kwargs)
+
+        # raise commands.errors.MissingAnyRole()
 
         await inter.response.send_message(embed=error_embed)
 
